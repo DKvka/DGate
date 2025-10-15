@@ -29,12 +29,25 @@ func (m *Manager) RunCli() {
 		userInput := scanner.Bytes()
 
 		switch bytes.ToLower(userInput)[0] {
+
 		case ADD:
-			m.AddService()
+			name := GetString("Enter the name of the service")
+			addr := GetString("Address of the service")
+			m.AddService(name, addr)
+
 		case DEL:
-			m.DeleteService()
+			name := GetString("Enter the name of the service to delete or leave blank to cancel")
+			m.DeleteService(name)
+
 		default:
 			fmt.Println(usage)
 		}
 	}
+}
+
+func GetString(prompt string) string {
+	fmt.Println(prompt)
+	var input string
+	fmt.Scanln(&input)
+	return input
 }
