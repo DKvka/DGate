@@ -28,3 +28,4 @@ func (m *Manager) DeleteService(name string) {
 	m.lock.Lock()
 	defer m.lock.Unlock()
 }
+
