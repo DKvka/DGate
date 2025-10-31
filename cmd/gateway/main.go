@@ -1,7 +1,6 @@
 package main
 
 import (
-	"dgateway/internal/manager"
 	"flag"
 	"log"
 	"net/http"
@@ -20,13 +19,10 @@ func main() {
 
 	log.SetOutput(logFile)
 
-	m := manager.NewManager()
-
-	go m.RunCli()
-
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("/", m.Route)
+	mux.HandleFunc("/", nil)
 
 	log.Fatal(http.ListenAndServe(*port, mux))
 }
+
