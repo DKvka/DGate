@@ -1,0 +1,20 @@
+{
+    "gateway": {
+        "addr": "127.0.0.1",
+        "port": ":8844"
+    },
+
+    "serverpool": [
+        {
+            "gateway_endpoint": "/server1",
+            "name": "server1",
+            "destination": "127.0.0.1:8330"
+        },
+        {
+            "gateway_endpoint": "/server2",
+            "name": "server2",
+            "destination": "127.0.0.1:8331"
+
+        }
+    ]
+}
