@@ -1,14 +1,20 @@
 package main
 
 import (
+	"dgateway/internal/config"
 	"dgateway/internal/server"
 	"flag"
 	"log"
 )
 
 func main() {
-	configpath := flag.String("cpath", "config.json", "sets path to configuration json file")
+	configPath := flag.String("cpath", "config.json", "sets path to configuration json file")
 	flag.Parse()
 
-	log.Fatal(server.Run(*configpath))
+	cfg, err := config.Get(*configPath)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.Fatal(server.Run(cfg))
 }
