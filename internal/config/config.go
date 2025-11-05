@@ -6,13 +6,16 @@ import (
 	"os"
 )
 
+// Stores information about a single server behind the gateway
 type server struct {
 	GatewayEndpoint string `json:"gateway_endpoint"`
 	Name            string `json:"name"`
 	Destination     string `json:"destination"`
+	AllowWebsocket       bool `json:"allow_websocket"`
 }
 
-type config struct {
+// Stores the gateway configuration info
+type Config struct {
 	Gateway struct {
 		Addr string `json:"addr"`
 		Port string `json:"port"`
@@ -21,7 +24,7 @@ type config struct {
 }
 
 // Reads a JSON file into a `config` struct and returns it
-func Get(filepath string) (*config, error) {
+func Get(filepath string) (*Config, error) {
 	file, err := os.Open(filepath)
 	if err != nil {
 		return nil, err
@@ -33,7 +36,7 @@ func Get(filepath string) (*config, error) {
 		return nil, err
 	}
 
-	var cfg = new(config)
+	cfg := new(Config)
 	err = json.Unmarshal(configjson, cfg)
 	if err != nil {
 		return nil, err
