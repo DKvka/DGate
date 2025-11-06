@@ -1,6 +1,6 @@
 # DGate
 
-API Gateway/reverse proxy for a self hosted server collection written in Go.
+A simple and lightweight API Gateway/reverse proxy made for a self hosted server collection and written in Go.
 
 ## Features:
 
