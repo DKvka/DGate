@@ -7,7 +7,7 @@ API Gateway/reverse proxy for a self hosted server collection written in Go.
 - JSON based configuration for gateway and servers behind it
 - Reverse proxying
 - Simple, extensible and easy to modify structure
-- Websocket support planned and ready to implement
+- Websocket support planned from start and ready to be implemented
 
 ## How-to:
 
