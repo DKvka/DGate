@@ -1,10 +1,11 @@
 package main
 
 import (
-	"dgate/internal/config"
-	"dgate/internal/server"
 	"flag"
 	"log"
+
+	"dgate/internal/config"
+	"dgate/internal/server"
 )
 
 func main() {
