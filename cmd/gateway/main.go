@@ -1,8 +1,8 @@
 package main
 
 import (
-	"dgateway/internal/config"
-	"dgateway/internal/server"
+	"dgate/internal/config"
+	"dgate/internal/server"
 	"flag"
 	"log"
 )

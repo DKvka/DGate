@@ -1,4 +1,4 @@
-module dgateway
+module dgate
 
 go 1.24.3
 

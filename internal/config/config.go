@@ -11,7 +11,7 @@ type server struct {
 	GatewayEndpoint string `json:"gateway_endpoint"`
 	Name            string `json:"name"`
 	Destination     string `json:"destination"`
-	AllowWebsocket       bool `json:"allow_websocket"`
+	AllowWebsocket  bool   `json:"allow_websocket"`
 }
 
 // Stores the gateway configuration info

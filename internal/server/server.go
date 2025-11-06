@@ -1,10 +1,10 @@
 package server
 
 import (
-	"dgateway/internal/config"
-	"dgateway/internal/handler"
-	"net/http"
+	"dgate/internal/config"
+	"dgate/internal/handler"
 	"log"
+	"net/http"
 )
 
 // Entry point
