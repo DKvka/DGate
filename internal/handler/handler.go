@@ -18,7 +18,10 @@ func Create(dest string) http.HandlerFunc {
 	proxy := httputil.NewSingleHostReverseProxy(url)
 
 	return func(w http.ResponseWriter, r *http.Request) {
+		log.Println()
+		log.Println("Incoming request from:", r.RemoteAddr, " - Routing to:", url)
 		proxy.ServeHTTP(w, r)
+		log.Println("Roundtrip success, response sent to client")
 	}
 }
 

@@ -15,7 +15,7 @@
             "gateway_endpoint": "/server2",
             "name": "server2",
             "destination": "http://127.0.0.1:8331",
-            "allow_websocket": true
+            "allow_websocket": false
         }
     ]
 }
