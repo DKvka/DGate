@@ -1,20 +1,20 @@
 {
     "gateway": {
         "addr": "127.0.0.1",
-        "port": ":8844"
+        "port": ":8080"
     },
 
     "serverpool": [
         {
             "gateway_endpoint": "/server1",
             "name": "server1",
-            "destination": "http://127.0.0.1:8330",
+            "destination": "http://127.0.0.1:8081",
             "allow_websocket": false
         },
         {
             "gateway_endpoint": "/server2",
             "name": "server2",
-            "destination": "http://127.0.0.1:8331",
+            "destination": "http://127.0.0.1:8082",
             "allow_websocket": false
         }
     ]
