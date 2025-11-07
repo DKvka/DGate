@@ -126,7 +126,7 @@ func CreateWithWebsocket(dest string, buffersize, clientTimeout, serverTimeout i
 			defer serverConn.Close()
 			log.Printf("%d - Connection opened to backend", handleID)
 
-			// Connection deadline setup
+			// Connection keep-alive/deadline setup
 			serverConn.SetReadDeadline(time.Now().Add(time.Duration(serverTimeout) * time.Second))
 			serverConn.SetPongHandler(func(string) error {
 				serverConn.SetReadDeadline(time.Now().Add(time.Duration(serverTimeout) * time.Second))
