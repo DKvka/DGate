@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/gorilla/websocket"
 )
@@ -56,22 +57,32 @@ func Create(dest string) http.HandlerFunc {
 
 // Creates an http handler that allows websocket upgrades
 // to the destination backend
-func CreateWithWebsocket(dest string) http.HandlerFunc {
+//
+// Timeouts must be in seconds
+func CreateWithWebsocket(dest string, buffersize, clientTimeout, serverTimeout int) http.HandlerFunc {
 	_url, err := url.Parse(dest)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	wsURL := *_url
-	wsURL.Scheme = "ws"
+	wsURL.Scheme = "wss"
+	if _url.Scheme == "http" {
+		wsURL.Scheme = "ws"
+	}
 
 	proxy := httputil.NewSingleHostReverseProxy(_url)
 
 	upgrader := websocket.Upgrader{
-		ReadBufferSize:  2048,
-		WriteBufferSize: 2048,
+		ReadBufferSize:  buffersize,
+		WriteBufferSize: buffersize,
 		CheckOrigin: func(r *http.Request) bool {
-			return true
+			u, err := url.Parse(r.Header.Get("Origin"))
+			if err != nil {
+				return false
+			}
+
+			return u.Hostname() == "127.0.0.1" || u.Hostname() == "localhost" || u.Hostname() == "deekays.ddns.net"
 		},
 	}
 
@@ -86,48 +97,68 @@ func CreateWithWebsocket(dest string) http.HandlerFunc {
 			clientConn, err := upgrader.Upgrade(w, r, nil)
 			if err != nil {
 				log.Printf("%d - %s", handleID, err)
-				http.Error(w, "Error opening websocket", http.StatusInternalServerError)
 				return
 			}
 			defer clientConn.Close()
 			log.Printf("%d - Client successfully upgraded", handleID)
 
-			// Connect websocket to backend
+			// Connect websocket to backend with stripped header
 			log.Printf("%d - Connecting to backend server...", handleID)
-			serverConn, _, err := websocket.DefaultDialer.Dial(wsURL.String(), r.Header)
+
+			header := http.Header{}
+			for k, v := range r.Header {
+				if strings.HasPrefix(strings.ToLower(k), "sec-websocket") ||
+					strings.ToLower(k) == "connection" ||
+					strings.ToLower(k) == "upgrade" {
+					continue
+				}
+				header[k] = v
+			}
+
+			serverConn, _, err := websocket.DefaultDialer.Dial(
+				wsURL.ResolveReference(r.URL).String(),
+				header,
+			)
 			if err != nil {
 				log.Printf("%d - %s", handleID, err)
-				http.Error(w, "Internal server error", http.StatusInternalServerError)
 				return
 			}
 			defer serverConn.Close()
 			log.Printf("%d - Connection opened to backend", handleID)
 
+			// Connection deadline setup
+			serverConn.SetReadDeadline(time.Now().Add(time.Duration(serverTimeout) * time.Minute))
+			serverConn.SetPongHandler(func(string) error {
+				serverConn.SetReadDeadline(time.Now().Add(time.Duration(serverTimeout) * time.Minute))
+				return nil
+			})
+			clientConn.SetReadDeadline(time.Now().Add(time.Duration(clientTimeout) * time.Minute))
+			clientConn.SetPongHandler(func(string) error {
+				clientConn.SetReadDeadline(time.Now().Add(time.Duration(clientTimeout) * time.Minute))
+				return nil
+			})
+
 			log.Printf("%d - Relaying messages between client and server", handleID)
 
-			// Graceful shutdown channels for client and server connections
-			killc := make(chan struct{})
-			kills := make(chan struct{})
+			// Graceful shutdown channel
+			kill := make(chan struct{})
+			var once sync.Once
+			STOP := func() { once.Do(func() { close(kill) }) }
 
 			// Client to server relay
 			go func() {
+				defer STOP()
 				for {
-					select {
-					case <-killc:
-						kills <- struct{}{}
+					t, msg, err := clientConn.ReadMessage()
+					if err != nil {
+						log.Printf("%d - %s", handleID, err)
 						return
-					default:
-						t, msg, err := clientConn.ReadMessage()
-						if err != nil {
-							log.Printf("%d - %s", handleID, err)
-							kills <- struct{}{}
-						}
+					}
 
-						err = serverConn.WriteMessage(t, msg)
-						if err != nil {
-							log.Printf("%d - %s", handleID, err)
-							kills <- struct{}{}
-						}
+					err = serverConn.WriteMessage(t, msg)
+					if err != nil {
+						log.Printf("%d - %s", handleID, err)
+						return
 					}
 				}
 			}()
@@ -135,20 +166,21 @@ func CreateWithWebsocket(dest string) http.HandlerFunc {
 			// Server to client relay
 			for {
 				select {
-				case <-kills:
-					killc <- struct{}{}
+				case <-kill:
 					return
 				default:
 					t, msg, err := serverConn.ReadMessage()
 					if err != nil {
 						log.Printf("%d - %s", handleID, err)
-						killc <- struct{}{}
+						STOP()
+						return
 					}
 
 					err = clientConn.WriteMessage(t, msg)
 					if err != nil {
 						log.Printf("%d - %s", handleID, err)
-						killc <- struct{}{}
+						STOP()
+						return
 					}
 				}
 			}

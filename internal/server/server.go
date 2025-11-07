@@ -13,12 +13,16 @@ func Run(cfg *config.Config) error {
 
 	log.Println()
 	log.Println("Readying resources...")
-	for _, servercfg := range cfg.ServerPool {
-		log.Println("Adding server to pool:", servercfg.Name)
-		if servercfg.AllowWebsocket {
-			mux.Handle(servercfg.GatewayEndpoint, handler.CreateWithWebsocket(servercfg.Destination))
+	for _, sCfg := range cfg.ServerPool {
+		log.Println("Adding server to pool:", sCfg.Name)
+		if sCfg.AllowWebsocket {
+			mux.Handle(sCfg.GatewayEndpoint, handler.CreateWithWebsocket(
+				sCfg.Destination,
+				2048,
+				sCfg.WebsockSettings.ServerTimeout,
+				sCfg.WebsockSettings.ClientTimeout))
 		} else {
-			mux.Handle(servercfg.GatewayEndpoint, handler.Create(servercfg.Destination))
+			mux.Handle(sCfg.GatewayEndpoint, handler.Create(sCfg.Destination))
 		}
 	}
 
