@@ -18,9 +18,9 @@
             "allow_websocket": false
         },
         {
-            "gateway_endpoint": "/server2",
-            "name": "server2",
-            "destination": "http://127.0.0.1:8082",
+            "gateway_endpoint": "/server3",
+            "name": "server3",
+            "destination": "http://127.0.0.1:8083",
             "allow_websocket": true,
             "websock_settings": {
                 "client_timeout": 2,
