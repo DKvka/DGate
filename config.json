@@ -16,6 +16,16 @@
             "name": "server2",
             "destination": "http://127.0.0.1:8082",
             "allow_websocket": false
+        },
+        {
+            "gateway_endpoint": "/server2",
+            "name": "server2",
+            "destination": "http://127.0.0.1:8082",
+            "allow_websocket": true,
+            "websock_settings": {
+                "client_timeout": 2,
+                "server_timeout": 2
+            }
         }
     ]
 }

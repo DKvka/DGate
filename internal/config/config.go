@@ -12,6 +12,10 @@ type server struct {
 	Name            string `json:"name"`
 	Destination     string `json:"destination"`
 	AllowWebsocket  bool   `json:"allow_websocket"`
+	WebsockSettings struct {
+		ClientTimeout int `json:"client_timeout"`
+		ServerTimeout int `json:"server_timeout"`
+	} `json:"websock_settings"`
 }
 
 // Stores the gateway configuration info
@@ -19,7 +23,7 @@ type Config struct {
 	Gateway struct {
 		Addr string `json:"addr"`
 		Port string `json:"port"`
-	}
+	} `json:"gateway"`
 	ServerPool []server
 }
 
