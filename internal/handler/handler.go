@@ -127,14 +127,14 @@ func CreateWithWebsocket(dest string, buffersize, clientTimeout, serverTimeout i
 			log.Printf("%d - Connection opened to backend", handleID)
 
 			// Connection deadline setup
-			serverConn.SetReadDeadline(time.Now().Add(time.Duration(serverTimeout) * time.Minute))
+			serverConn.SetReadDeadline(time.Now().Add(time.Duration(serverTimeout) * time.Second))
 			serverConn.SetPongHandler(func(string) error {
-				serverConn.SetReadDeadline(time.Now().Add(time.Duration(serverTimeout) * time.Minute))
+				serverConn.SetReadDeadline(time.Now().Add(time.Duration(serverTimeout) * time.Second))
 				return nil
 			})
-			clientConn.SetReadDeadline(time.Now().Add(time.Duration(clientTimeout) * time.Minute))
+			clientConn.SetReadDeadline(time.Now().Add(time.Duration(clientTimeout) * time.Second))
 			clientConn.SetPongHandler(func(string) error {
-				clientConn.SetReadDeadline(time.Now().Add(time.Duration(clientTimeout) * time.Minute))
+				clientConn.SetReadDeadline(time.Now().Add(time.Duration(clientTimeout) * time.Second))
 				return nil
 			})
 
