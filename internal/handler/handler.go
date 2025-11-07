@@ -149,21 +149,27 @@ func CreateWithWebsocket(dest string, buffersize, clientTimeout, serverTimeout i
 			go func() {
 				defer STOP()
 				for {
-					t, msg, err := clientConn.ReadMessage()
-					if err != nil {
-						log.Printf("%d - %s", handleID, err)
+					select {
+					case <-kill:
 						return
-					}
+					default:
+						t, msg, err := serverConn.ReadMessage()
+						if err != nil {
+							log.Printf("%d - %s", handleID, err)
+							return
+						}
 
-					err = serverConn.WriteMessage(t, msg)
-					if err != nil {
-						log.Printf("%d - %s", handleID, err)
-						return
+						err = clientConn.WriteMessage(t, msg)
+						if err != nil {
+							log.Printf("%d - %s", handleID, err)
+							return
+						}
 					}
 				}
 			}()
 
 			// Server to client relay
+			defer STOP()
 			for {
 				select {
 				case <-kill:
@@ -172,21 +178,19 @@ func CreateWithWebsocket(dest string, buffersize, clientTimeout, serverTimeout i
 					t, msg, err := serverConn.ReadMessage()
 					if err != nil {
 						log.Printf("%d - %s", handleID, err)
-						STOP()
 						return
 					}
 
 					err = clientConn.WriteMessage(t, msg)
 					if err != nil {
 						log.Printf("%d - %s", handleID, err)
-						STOP()
 						return
 					}
 				}
 			}
 		}
 
-		// Serve initial HTTP for the initial non websocket request
+		// Serve HTTP for the initial non websocket request
 		log.Printf("%d - Incoming request from: %s - routing to: %s \n", handleID, r.RemoteAddr, _url)
 		proxy.ServeHTTP(w, r)
 		log.Printf("%d - Initial rountrip success, waiting for upgrade to websocket... \n", handleID)
