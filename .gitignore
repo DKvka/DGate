@@ -28,5 +28,5 @@ go.work.sum
 gateway
 
 # Config file can be updated on remote when needed
-config.json
+/config.json
 
