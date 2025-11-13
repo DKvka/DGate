@@ -2,6 +2,7 @@ package handler
 
 import (
 	"log"
+	"math/rand"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
@@ -18,9 +19,9 @@ type idspawner struct {
 	m  sync.Mutex
 }
 
-func NewIdSpawner(startvalue uint64) *idspawner {
+func NewIdSpawner() *idspawner {
 	return &idspawner{
-		id: startvalue,
+		id: rand.Uint64(),
 	}
 }
 
@@ -44,7 +45,7 @@ func Create(dest string) http.HandlerFunc {
 
 	proxy := httputil.NewSingleHostReverseProxy(_url)
 
-	spawner := NewIdSpawner(1000000000000000)
+	spawner := NewIdSpawner()
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		handleID := spawner.Next()
@@ -86,7 +87,7 @@ func CreateWithWebsocket(dest string, buffersize, clientTimeout, serverTimeout i
 		},
 	}
 
-	spawner := NewIdSpawner(2000000000000000)
+	spawner := NewIdSpawner()
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		handleID := spawner.Next()
