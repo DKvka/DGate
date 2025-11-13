@@ -26,3 +26,7 @@ go.work.sum
 
 # MacOS exe
 gateway
+
+# Config file can be updated on remote when needed
+config.json
+

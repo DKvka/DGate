@@ -23,8 +23,8 @@
             "destination": "http://127.0.0.1:8083",
             "allow_websocket": true,
             "websock_settings": {
-                "client_timeout": 2,
-                "server_timeout": 2
+                "client_timeout": 25,
+                "server_timeout": 25
             }
         }
     ]
