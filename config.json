@@ -1,28 +1,22 @@
 {
     "gateway": {
-        "addr": "127.0.0.1",
         "port": ":8080"
     },
 
     "serverpool": [
         {
-            "gateway_endpoint": "/server1",
-            "name": "server1",
-            "destination": "http://127.0.0.1:8081",
+            "gateway_endpoint": "/hello",
+            "name": "hello",
+            "destination": "http://127.0.0.1:8331",
             "allow_websocket": false
         },
         {
-            "gateway_endpoint": "/server2",
-            "name": "server2",
-            "destination": "http://127.0.0.1:8082",
-            "allow_websocket": false
-        },
-        {
-            "gateway_endpoint": "/server3",
-            "name": "server3",
-            "destination": "http://127.0.0.1:8083",
+            "gateway_endpoint": "/echo",
+            "name": "echows",
+            "destination": "http://127.0.0.1:8333",
             "allow_websocket": true,
             "websock_settings": {
+                "websock_endpoint": "/ws",
                 "client_timeout": 25,
                 "server_timeout": 25
             }
