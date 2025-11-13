@@ -7,7 +7,7 @@ A simple and lightweight API Gateway/reverse proxy made for a self hosted server
 - JSON based configuration for gateway and servers behind it
 - Reverse proxying
 - Simple, extensible and easy to modify structure
-- Websocket support planned from start and ready to be implemented
+- Websocket passthrough support
 
 ## How-to:
 
